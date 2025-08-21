@@ -45,21 +45,19 @@ void loop() {
   float v_sense = analogRead(V_SENSE)*3.3*11.9/4095.0;
   SystemState state = NOT_CONNECTED;
   
-
-  if(i_sense > 100){
-    state = OVERCURRENT;
-    digitalWrite(POWER_ON, LOW);
-    while(true) {
+  if(digitalRead(POWER_ON) == HIGH) {
+    if(i_sense > 100){
+      state = OVERCURRENT;
+      digitalWrite(POWER_ON, LOW);
       buzzPattern(1, 100, 100);
-    }
-  } 
-  else if(v_sense < 22.0){
-    state = UNDERVOLTAGE;
-    digitalWrite(POWER_ON, LOW);
-    while(true) {
+    } 
+    else if(v_sense < 22.0){
+      state = UNDERVOLTAGE;
+      digitalWrite(POWER_ON, LOW);
       buzzPattern(1, 500, 500);
     }
   }
+  
   if(!ps5.isConnected()) {
     state = NOT_CONNECTED;
     digitalWrite(POWER_ON, LOW);
