@@ -9043,7 +9043,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "3")
 				)
@@ -9112,7 +9112,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "5")
 				)
@@ -9174,7 +9174,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "7")
 				)
@@ -9246,7 +9246,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "4")
 				)
@@ -9308,7 +9308,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "6")
 				)
@@ -9380,7 +9380,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "2")
 				)
@@ -9462,7 +9462,7 @@
 			)
 		)
 		(instances
-			(project "pcb"
+			(project "PowerControlBoard"
 				(path "/92227691-1afd-4c5e-84e1-3021e5c45739"
 					(page "8")
 				)
