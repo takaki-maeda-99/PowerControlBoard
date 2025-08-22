@@ -42,7 +42,7 @@ void setup() {
 
 void loop() {
   float i_sense = analogRead(I_SENSE);//*3.3/(4095.0*0.001*20.0);
-  float v_sense = analogRead(V_SENSE)*3.3*11.9/4095.0;
+  float v_sense = analogRead(V_SENSE)*3.3*11.2/4095.0;
   SystemState state = NOT_CONNECTED;
   
   if(digitalRead(POWER_ON) == HIGH) {
@@ -96,6 +96,12 @@ void loop() {
     ly = ps5.LStickY();
     rx = ps5.RStickX();
     ry = ps5.RStickY();
+    
+    const int8_t deadzone = 10;
+    if (abs(lx) < deadzone) lx = 0;
+    if (abs(ly) < deadzone) ly = 0;
+    if (abs(rx) < deadzone) rx = 0;
+    if (abs(ry) < deadzone) ry = 0;
     l2 = ps5.L2Value();
     r2 = ps5.R2Value();
     
