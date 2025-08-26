@@ -1,0 +1,230 @@
+{
+  "can_protocol": {
+    "version": "1.0",
+    "description": "GenericControlBoard CAN Protocol Specification",
+    "config": {
+      "baudrate": 500000,
+      "frame_format": "standard_11bit",
+      "endianness": {
+        "motor_commands": "little",
+        "dji_motor": "big"
+      }
+    },
+    "frames": {
+      "controller_input": {
+        "0x100": {
+          "name": "controller_state_analog",
+          "direction": "teensy1_to_pc",
+          "description": "コントローラー状態とアナログスティック",
+          "length": 6,
+          "fields": [
+            {
+              "byte": 0,
+              "name": "state",
+              "type": "uint8_t",
+              "description": "システム状態"
+            },
+            {
+              "byte": 1,
+              "name": "mode", 
+              "type": "uint8_t",
+              "description": "モード（固定値0）"
+            },
+            {
+              "byte": 2,
+              "name": "lx",
+              "type": "int8_t", 
+              "description": "左スティックX軸"
+            },
+            {
+              "byte": 3,
+              "name": "ly",
+              "type": "int8_t",
+              "description": "左スティックY軸"
+            },
+            {
+              "byte": 4,
+              "name": "rx",
+              "type": "int8_t",
+              "description": "右スティックX軸"
+            },
+            {
+              "byte": 5,
+              "name": "ry",
+              "type": "int8_t",
+              "description": "右スティックY軸"
+            }
+          ]
+        },
+        "0x101": {
+          "name": "controller_buttons_triggers",
+          "direction": "teensy1_to_pc",
+          "description": "ボタンとトリガー",
+          "length": 4,
+          "fields": [
+            {
+              "bytes": [0, 1],
+              "name": "buttons",
+              "type": "uint16_t",
+              "description": "ボタン状態ビットマスク",
+              "bit_mapping": {
+                "bit_0": "Square",
+                "bit_1": "Cross", 
+                "bit_2": "Circle",
+                "bit_3": "Triangle",
+                "bit_4": "L1",
+                "bit_5": "R1",
+                "bit_6": "L3",
+                "bit_7": "R3",
+                "bit_8": "Share",
+                "bit_9": "Options",
+                "bit_10": "PSButton",
+                "bit_11": "Touchpad",
+                "bit_12": "Up",
+                "bit_13": "Down",
+                "bit_14": "Left",
+                "bit_15": "Right"
+              }
+            },
+            {
+              "byte": 2,
+              "name": "l2",
+              "type": "uint8_t",
+              "description": "左トリガー値"
+            },
+            {
+              "byte": 3,
+              "name": "r2", 
+              "type": "uint8_t",
+              "description": "右トリガー値"
+            }
+          ]
+        }
+      },
+      "odometry": {
+        "0x200": {
+          "name": "speed_data",
+          "direction": "teensy2_to_pc", 
+          "description": "オドメトリ速度情報",
+          "length": 8,
+          "fields": [
+            {
+              "bytes": [0, 1, 2, 3],
+              "name": "speedX",
+              "type": "float",
+              "unit": "m/s",
+              "description": "X方向速度"
+            },
+            {
+              "bytes": [4, 5, 6, 7],
+              "name": "speedY", 
+              "type": "float",
+              "unit": "m/s",
+              "description": "Y方向速度"
+            }
+          ]
+        }
+      },
+      "motor_control": {
+        "id_format": {
+          "formula": "(board_id << 4) | motor_id",
+          "board_id_range": [1, 15],
+          "motor_id_range": [1, 8]
+        },
+        "command_frame": {
+          "name": "motor_command",
+          "direction": "pc_to_teensy",
+          "description": "モーター制御コマンド",
+          "length": 8,
+          "fields": [
+            {
+              "byte": 0,
+              "name": "mode",
+              "type": "uint8_t",
+              "description": "制御モード",
+              "values": {
+                "0x00": "Disable",
+                "0x01": "Speed",
+                "0x02": "BoundedAngle", 
+                "0x03": "UnboundedAngle",
+                "0xFF": "Homing"
+              }
+            },
+            {
+              "byte": 1,
+              "name": "opt",
+              "type": "uint8_t",
+              "description": "オプション（現状0固定）"
+            },
+            {
+              "bytes": [2, 3, 4, 5],
+              "name": "value",
+              "type": "int32_t",
+              "endian": "little",
+              "scale": 1000,
+              "description": "指令値（1000倍スケール）",
+              "units": {
+                "speed": "rad/s",
+                "angle": "rad"
+              }
+            },
+            {
+              "byte": 6,
+              "name": "seq",
+              "type": "uint8_t", 
+              "description": "シーケンス番号（0-255循環）"
+            },
+            {
+              "byte": 7,
+              "name": "timeout",
+              "type": "uint8_t",
+              "unit": "10ms",
+              "description": "タイムアウト時間（0=デフォルト100ms）"
+            }
+          ]
+        }
+      }
+    },
+    "boards": {
+      "teensy1": {
+        "board_id": 1,
+        "role": "steering_controller",
+        "description": "ステアリング制御とコントローラー入力",
+        "motor_ids": [1, 2, 3, 4],
+        "can_ids": ["0x011", "0x012", "0x013", "0x014"],
+        "transmit_frames": ["0x100", "0x101"],
+        "receive_frames": ["motor_commands"]
+      },
+      "teensy2": {
+        "board_id": 2,
+        "role": "wheel_controller",
+        "description": "ホイール駆動制御とオドメトリ",
+        "motor_ids": [1, 2, 3, 4],
+        "can_ids": ["0x021", "0x022", "0x023", "0x024"],
+        "transmit_frames": ["0x200"],
+        "receive_frames": ["motor_commands"]
+      },
+      "teensy3": {
+        "board_id": 3,
+        "role": "arm_controller", 
+        "description": "アーム制御と角度フィードバック",
+        "motor_ids": [1, 2, 3, 9],
+        "can_ids": ["0x031", "0x032", "0x033", "0x039"],
+        "transmit_frames": ["0x201"],
+        "receive_frames": ["motor_commands"]
+      }
+    },
+    "safety": {
+      "timeout": {
+        "default_ms": 100,
+        "action": "set_current_to_zero",
+        "description": "タイムアウト時はモーター電流を0に設定"
+      },
+      "sequence_number": {
+        "purpose": "duplicate_detection",
+        "behavior": "ignore_duplicate_sequence",
+        "range": "0-255_cyclic"
+      }
+    }
+  }
+}
